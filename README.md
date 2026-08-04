@@ -2,6 +2,7 @@
 
 Generates drug-like molecules from a parent compound by deriving fragment combination rules from a molecular database (e.g., ChEMBL). Starting from a core structure and defined attachment vectors, new analogues are enumerated or randomly sampled, statistically consistent with the source database. Each generated molecule receives a build probability score reflecting how likely it would appear in an exhaustive enumeration. Supports random and systematic generation modes with optional physicochemical and medicinal chemistry filters.
 
+This model was incorporated on 2026-08-04.
 
 
 ## Information
@@ -43,8 +44,11 @@ _10 of 100 columns are shown_
 ### Source and Deployment
 - **Source:** `Local`
 - **Source Type:** `External`
+- **S3 Storage**: [https://ersilia-models-zipped.s3.eu-central-1.amazonaws.com/eos8zvb.zip](https://ersilia-models-zipped.s3.eu-central-1.amazonaws.com/eos8zvb.zip)
 
 ### Resource Consumption
+- **Model Size (Mb):** `42`
+- **Environment Size (Mb):** `1030`
 
 
 ### References
