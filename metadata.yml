@@ -12,35 +12,27 @@ Description: Generates drug-like molecules from a parent compound by deriving
   medicinal chemistry filters.
 Deployment:
   - Local
-  - Online
-Source: Local, Online
-Source Type: Internal, Replicated, External
-Task: Annotation, Representation, Sampling
-Subtask: Property calculation or prediction, Activity prediction, Featurization,
-  Projection, Similarity search, Generation
+Source: Local
+Source Type: External
+Task: Sampling
+Subtask: Generation
 Input:
   - Compound
 Input Dimension: 1
 Output:
-  - Value
-  - Score
   - Compound
-  - Text
-Output Dimension: 1
-Output Consistency: Fixed, Variable
-Interpretation: The output of this template model should be interpreted like 
-  this.
+Output Dimension: 100
+Output Consistency: Variable
+Interpretation: Generated drug-like analogues of the input parent compound sampled from ChEMBL fragment combination rules.
 Tag:
   - Compound generation
   - Drug-likeness
   - ChEMBL
 Biomedical Area:
-  - Biomedical Area 1
-  - Biomedical Area 2
+  - Any
 Target Organism:
-  - Target Organism 1
-  - Target Organism 2
-Publication Type: Peer reviewed, Preprint, Other
+  - Any
+Publication Type: Peer reviewed
 Publication Year: 2026
 Publication: https://doi.org/10.1021/acs.jcim.6c00689
 Source Code: https://github.com/HirstGroup/PyMolGen
