@@ -1,6 +1,6 @@
 Identifier: eos8zvb
 Slug: pymolgen
-Status: In progress
+Status: Ready
 Title: PyMolGen Drug-Like Molecule Generation
 Description: Generates drug-like molecules from a parent compound by deriving 
   fragment combination rules from a molecular database (e.g., ChEMBL). Starting 
@@ -40,6 +40,16 @@ Source Code: https://github.com/HirstGroup/PyMolGen
 License: MIT
 Contributor: arnaucoma24
 Incorporation Date: '2026-08-04'
+Last Packaging Date: '2026-08-04'
+Release: v1.0.0
 S3: https://ersilia-models-zipped.s3.eu-central-1.amazonaws.com/eos8zvb.zip
+DockerHub: https://hub.docker.com/r/ersiliaos/eos8zvb
+Docker Architecture: AMD64
 Model Size: 42.0
 Environment Size: 1030.0
+Image Size: 1143.06
+Computational Performance 1: 38.84
+Computational Performance 2: 28.35
+Computational Performance 3: 46.94
+Computational Performance 4: 302.01
+Computational Performance 5: 1448.8
