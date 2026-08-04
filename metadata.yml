@@ -23,7 +23,8 @@ Output:
   - Compound
 Output Dimension: 100
 Output Consistency: Variable
-Interpretation: Generated drug-like analogues of the input parent compound sampled from ChEMBL fragment combination rules.
+Interpretation: Generated drug-like analogues of the input parent compound 
+  sampled from ChEMBL fragment combination rules.
 Tag:
   - Compound generation
   - Drug-likeness
@@ -38,3 +39,4 @@ Publication: https://doi.org/10.1021/acs.jcim.6c00689
 Source Code: https://github.com/HirstGroup/PyMolGen
 License: MIT
 Contributor: arnaucoma24
+Incorporation Date: '2026-08-04'
