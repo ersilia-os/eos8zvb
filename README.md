@@ -2,7 +2,7 @@
 
 Generates drug-like molecules from a parent compound by deriving fragment combination rules from a molecular database (ChEMBL). Starting from a core structure, new analogues are randomly sampled according to the source databases fragment-bond frequencies, deduplicated, and checked for RDKit validity. Each output is a distinct generated analogue of the input compound.
 
-This model was incorporated on 2026-08-04.Last packaged on 2026-08-05.
+This model was incorporated on 2026-08-04.Last packaged on 2026-09-28.
 
 ## Information
 ### Identifiers
@@ -50,12 +50,12 @@ _10 of 100 columns are shown_
 ### Resource Consumption
 - **Model Size (Mb):** `42`
 - **Environment Size (Mb):** `1032`
-- **Image Size (Mb):** `1143.18`
+- **Image Size (Mb):** `1146.32`
 
 **Computational Performance (seconds):**
-- 10 inputs: `35.81`
-- 100 inputs: `38.67`
-- 10000 inputs: `1141.83`
+- 10 inputs: `32.86`
+- 100 inputs: `45.6`
+- 10000 inputs: `1442.5`
 
 ### References
 - **Source Code**: [https://github.com/HirstGroup/PyMolGen](https://github.com/HirstGroup/PyMolGen)
