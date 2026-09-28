@@ -43,7 +43,7 @@ S3: https://ersilia-models-zipped.s3.eu-central-1.amazonaws.com/eos8zvb.zip
 DockerHub: https://hub.docker.com/r/ersiliaos/eos8zvb
 Docker Architecture: AMD64
 Model Size: 42.0
-Environment Size: 1030.0
+Environment Size: 1032.0
 Image Size: 1143.18
 Computational Performance 1: 35.81
 Computational Performance 2: 26.89
