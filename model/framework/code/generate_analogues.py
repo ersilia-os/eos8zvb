@@ -54,7 +54,13 @@ def _find_parent_frag_id(smiles, checkpoints_dir, fragment_db_graph, inchi_looku
     from pymolgen.fragment_mol import get_fragments_dataset
     from pymolgen.molecule import Molecule
 
-    mol = molecule_from_smiles(smiles)
+    try:
+        mol = molecule_from_smiles(smiles)
+    except Exception:
+        # molecule_from_smiles calls Chem.AddHs() unconditionally before
+        # checking for a parse failure, so an invalid SMILES raises instead
+        # of returning None. Treat it the same as an unparseable molecule.
+        mol = None
     best_frag_id, best_n_heavy = None, 0
 
     if mol is not None:
