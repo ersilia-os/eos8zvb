@@ -2,12 +2,13 @@ Identifier: eos8zvb
 Slug: pymolgen
 Status: Ready
 Title: PyMolGen Drug-Like Molecule Generation
-Description: Assembles up to 100 drug-like molecules by drawing fragments from a curated
-  database and joining them at compatible attachment points. PyMolGen takes a database-driven
-  route rather than a learned one, so generated structures are built from pieces that
-  already occur in real compounds and inherit their chemical plausibility. Novelty
-  is bounded by the fragment library, and the resulting molecules should still be
-  filtered for synthetic accessibility and undesirable substructures.
+Description: Assembles up to 100 drug-like molecules by drawing fragments from a
+  curated database and joining them at compatible attachment points. PyMolGen 
+  takes a database-driven route rather than a learned one, so generated 
+  structures are built from pieces that already occur in real compounds and 
+  inherit their chemical plausibility. Novelty is bounded by the fragment 
+  library, and the resulting molecules should still be filtered for synthetic 
+  accessibility and undesirable substructures.
 Deployment:
   - Local
 Source: Local
@@ -21,8 +22,8 @@ Output:
   - Compound
 Output Dimension: 100
 Output Consistency: Variable
-Interpretation: Up to 100 generated drug-like molecules assembled from a curated fragment
-  database.
+Interpretation: Up to 100 generated drug-like molecules assembled from a curated
+  fragment database.
 Tag:
   - Compound generation
   - Drug-likeness
