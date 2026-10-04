@@ -1,6 +1,6 @@
 # PyMolGen Drug-Like Molecule Generation
 
-Generates drug-like molecules from a parent compound by deriving fragment combination rules from a molecular database (ChEMBL). Starting from a core structure, new analogues are randomly sampled according to the source databases fragment-bond frequencies, deduplicated, and checked for RDKit validity. Each output is a distinct generated analogue of the input compound.
+Assembles up to 100 drug-like molecules by drawing fragments from a curated database and joining them at compatible attachment points. PyMolGen takes a database-driven route rather than a learned one, so generated structures are built from pieces that already occur in real compounds and inherit their chemical plausibility. Novelty is bounded by the fragment library, and the resulting molecules should still be filtered for synthetic accessibility and undesirable substructures.
 
 This model was incorporated on 2026-08-04.Last packaged on 2026-09-28.
 
@@ -23,7 +23,7 @@ This model was incorporated on 2026-08-04.Last packaged on 2026-09-28.
 ### Output
 - **Output Dimension:** `100`
 - **Output Consistency:** `Variable`
-- **Interpretation:** Generated drug-like analogues of the input parent compound sampled from ChEMBL fragment combination rules.
+- **Interpretation:** Up to 100 generated drug-like molecules assembled from a curated fragment database.
 
 Below are the **Output Columns** of the model:
 | Name | Type | Direction | Description |
