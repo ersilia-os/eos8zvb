@@ -2,7 +2,7 @@
 
 Assembles up to 100 drug-like molecules by drawing fragments from a curated database and joining them at compatible attachment points. PyMolGen takes a database-driven route rather than a learned one, so generated structures are built from pieces that already occur in real compounds and inherit their chemical plausibility. Novelty is bounded by the fragment library, and the resulting molecules should still be filtered for synthetic accessibility and undesirable substructures.
 
-This model was incorporated on 2026-08-04.Last packaged on 2026-09-28.
+This model was incorporated on 2026-08-04.Last packaged on 2026-10-04.
 
 ## Information
 ### Identifiers
@@ -50,12 +50,12 @@ _10 of 100 columns are shown_
 ### Resource Consumption
 - **Model Size (Mb):** `42`
 - **Environment Size (Mb):** `1033`
-- **Image Size (Mb):** `1146.32`
+- **Image Size (Mb):** `1146.33`
 
 **Computational Performance (seconds):**
-- 10 inputs: `32.86`
-- 100 inputs: `45.6`
-- 10000 inputs: `1442.5`
+- 10 inputs: `34.3`
+- 100 inputs: `102.29`
+- 10000 inputs: `-1`
 
 ### References
 - **Source Code**: [https://github.com/HirstGroup/PyMolGen](https://github.com/HirstGroup/PyMolGen)
