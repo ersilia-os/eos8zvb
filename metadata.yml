@@ -39,16 +39,16 @@ Source Code: https://github.com/HirstGroup/PyMolGen
 License: MIT
 Contributor: arnaucoma24
 Incorporation Date: '2026-08-04'
-Last Packaging Date: '2026-09-28'
+Last Packaging Date: '2026-10-04'
 Release: v1.0.0
 S3: https://ersilia-models-zipped.s3.eu-central-1.amazonaws.com/eos8zvb.zip
 DockerHub: https://hub.docker.com/r/ersiliaos/eos8zvb
 Docker Architecture: AMD64
 Model Size: 42.0
 Environment Size: 1033.0
-Image Size: 1146.32
-Computational Performance 1: 32.86
-Computational Performance 2: 25.63
-Computational Performance 3: 45.6
-Computational Performance 4: 298.12
-Computational Performance 5: 1442.5
+Image Size: 1146.33
+Computational Performance 1: 34.3
+Computational Performance 2: 31.42
+Computational Performance 3: 102.29
+Computational Performance 4: 877.37
+Computational Performance 5: -1.0
