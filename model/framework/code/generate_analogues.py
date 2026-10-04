@@ -9,6 +9,9 @@ from rdkit.Chem.inchi import MolToInchi
 
 _ENGINE = None
 
+_BENZENE_INCHI = "InChI=1S/C6H6/c1-2-4-6-5-3-1/h1-6H"
+_MAX_ATTEMPTS = 5000
+
 
 def _similarity(ref_fp, mol):
     """Morgan (radius 2, 2048 bits) Tanimoto between `ref_fp` and `mol`; 0.0 if there is no reference."""
@@ -57,8 +60,10 @@ def _get_engine(checkpoints_dir):
     return _ENGINE
 
 
-def _find_parent_frag_id(smiles, checkpoints_dir, fragment_db_graph, inchi_lookup):
-    """Return (frag_id, attach_atom) for the best matching parent fragment."""
+def _parent_candidates(smiles, checkpoints_dir, inchi_lookup):
+    """Fragment ids to grow from, best first: the fragments of the input that are in the fragment
+    database, largest first. Benzene is added as the last resort (it is the only candidate for an
+    unparseable input or one with no fragment in the database)."""
     sys.path.insert(0, checkpoints_dir)
     from pymolgen.molecule_formats import molecule_from_smiles, molecule_to_inchi
     from pymolgen.fragment_mol import get_fragments_dataset
@@ -71,80 +76,61 @@ def _find_parent_frag_id(smiles, checkpoints_dir, fragment_db_graph, inchi_looku
         # checking for a parse failure, so an invalid SMILES raises instead
         # of returning None. Treat it the same as an unparseable molecule.
         mol = None
-    best_frag_id, best_n_heavy = None, 0
 
+    heavy_atoms = {}  # fragment id -> number of heavy atoms
     if mol is not None:
         try:
             frags, _, _ = get_fragments_dataset(mol)
-            for fg in (frags or []):
-                try:
-                    frag_mol = Molecule()
-                    frag_mol.graph = fg
-                    frag_mol.free_valence_list = []
-                    inchi = molecule_to_inchi(frag_mol)
-                    frag_id = inchi_lookup.get(inchi)
-                    if frag_id is None:
-                        continue
-                    n_heavy = sum(
-                        1 for n in fg.nodes if fg.nodes[n]["element"] != "H"
-                    )
-                    if n_heavy > best_n_heavy:
-                        best_n_heavy = n_heavy
-                        best_frag_id = frag_id
-                except Exception:
-                    continue
         except Exception:
-            pass
+            frags = []
+        for fg in frags or []:
+            try:
+                frag_mol = Molecule()
+                frag_mol.graph = fg
+                frag_id = inchi_lookup.get(molecule_to_inchi(frag_mol))
+            except Exception:
+                continue
+            if frag_id is not None:
+                heavy_atoms[frag_id] = sum(
+                    1 for n in fg.nodes if fg.nodes[n]["element"] != "H"
+                )
 
-    if best_frag_id is None:
-        # fallback: benzene
-        benzene_inchi = "InChI=1S/C6H6/c1-2-4-6-5-3-1/h1-6H"
-        best_frag_id = inchi_lookup.get(benzene_inchi, 0)
+    candidates = sorted(heavy_atoms, key=lambda frag_id: -heavy_atoms[frag_id])
+    benzene_id = inchi_lookup.get(_BENZENE_INCHI, 0)
+    if benzene_id not in candidates:
+        candidates.append(benzene_id)
+    return candidates
 
-    fragment = fragment_db_graph.fragments[best_frag_id]
+
+def _parent_molecule(frag_id, fragment_db_graph):
+    """A FragmentMolecule made of fragment `frag_id` alone, or None if it has no attachment point."""
+    from pymolgen.fragment_molecule import FragmentMolecule
+
+    fragment = fragment_db_graph.fragments[frag_id]
     if not fragment.attachment_points:
-        best_frag_id = 0
-        fragment = fragment_db_graph.fragments[0]
-
+        return None
     ap = fragment.attachment_points[0]
     cm = fragment.get_canonical_mapping()[ap]
-    return best_frag_id, ap, cm
-
-
-def generate_analogues(smiles, checkpoints_dir, n=100):
-    """Generate n drug-like analogues of input SMILES, ordered from most to least similar
-    (Morgan Tanimoto) to the input. Returns list of length n (None for failed slots, at the end)."""
-    from pymolgen.fragment_molecule import FragmentMolecule, convert_fragment_molecule_to_mol
-    from pymolgen.fragment_molecule_builder import extend_molecule_random
-    from pymolgen.molecule_formats import molecule_to_smiles
-
-    fragment_db, fragment_db_graph, bond_freq_dict, inchi_lookup = _get_engine(
-        checkpoints_dir
-    )
-
-    frag_id, ap, cm = _find_parent_frag_id(
-        smiles, checkpoints_dir, fragment_db_graph, inchi_lookup
-    )
 
     parent = FragmentMolecule()
     parent.add_fragment(frag_id, [ap], {ap: cm})
     parent._graph._build_probability2 = 1.0
+    return parent
 
-    # an unparseable input has no reference: the outputs then keep their generation order
-    input_mol = Chem.MolFromSmiles(smiles)
-    ref_fp = (
-        AllChem.GetMorganFingerprintAsBitVect(input_mol, 2, nBits=2048)
-        if input_mol is not None
-        else None
-    )
 
-    generated = []
-    seen = set()
-    max_attempts = 5000
+def _grow(parent, n, generated, seen, engine, ref_fp, input_flat):
+    """Randomly extend `parent`, appending (tanimoto, canonical SMILES) to `generated` until it holds `n`
+    molecules or _MAX_ATTEMPTS is used up. Duplicates (canonical isomeric SMILES, shared `seen` set)
+    and echoes of the input (equal to `input_flat` ignoring stereochemistry) are skipped."""
+    from pymolgen.fragment_molecule import convert_fragment_molecule_to_mol
+    from pymolgen.fragment_molecule_builder import extend_molecule_random
+    from pymolgen.molecule_formats import molecule_to_smiles
 
-    for _ in range(max_attempts):
+    fragment_db, fragment_db_graph, bond_freq_dict, _ = engine
+
+    for _ in range(_MAX_ATTEMPTS):
         if len(generated) >= n:
-            break
+            return
         try:
             for mol in extend_molecule_random(
                 FragmentMolecule=parent,
@@ -156,17 +142,49 @@ def generate_analogues(smiles, checkpoints_dir, n=100):
                 try:
                     mol_obj = convert_fragment_molecule_to_mol(mol, fragment_db)
                     smi = molecule_to_smiles(mol_obj)
-                    if smi and smi not in seen:
-                        rdmol = Chem.MolFromSmiles(smi)
-                        if rdmol is not None:
-                            seen.add(smi)
-                            generated.append((_similarity(ref_fp, rdmol), smi))
+                    rdmol = Chem.MolFromSmiles(smi) if smi else None
+                    if rdmol is not None:
+                        key = Chem.MolToSmiles(rdmol)
+                        if (
+                            key not in seen
+                            and Chem.MolToSmiles(rdmol, isomericSmiles=False) != input_flat
+                        ):
+                            seen.add(key)
+                            generated.append((_similarity(ref_fp, rdmol), key))
                 except Exception:
                     pass
                 if len(generated) >= n:
-                    break
+                    return
         except Exception:
             pass
+
+
+def generate_analogues(smiles, checkpoints_dir, n=100):
+    """Generate n drug-like analogues of input SMILES, ordered from most to least similar
+    (Morgan Tanimoto) to the input. Returns list of length n (None for failed slots, at the end).
+
+    The largest fragment of the input found in the fragment database is grown by random fragment
+    additions; if it cannot give n molecules, the next largest fragment is used, and finally benzene.
+    Outputs are canonical SMILES, unique, and never equal to the input."""
+    engine = _get_engine(checkpoints_dir)
+    fragment_db_graph, inchi_lookup = engine[1], engine[3]
+
+    # an unparseable input has no reference: no similarity order and no echo check
+    input_mol = Chem.MolFromSmiles(smiles)
+    if input_mol is not None:
+        ref_fp = AllChem.GetMorganFingerprintAsBitVect(input_mol, 2, nBits=2048)
+        input_flat = Chem.MolToSmiles(input_mol, isomericSmiles=False)
+    else:
+        ref_fp, input_flat = None, None
+
+    generated = []
+    seen = set()
+    for frag_id in _parent_candidates(smiles, checkpoints_dir, inchi_lookup):
+        if len(generated) >= n:
+            break
+        parent = _parent_molecule(frag_id, fragment_db_graph)
+        if parent is not None:
+            _grow(parent, n, generated, seen, engine, ref_fp, input_flat)
 
     # most similar first; the sort is stable, so ties keep their generation order
     generated.sort(key=lambda item: -item[0])
