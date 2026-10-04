@@ -3,10 +3,20 @@ import sys
 import random
 import copy
 
-from rdkit import Chem
+from rdkit import Chem, DataStructs
+from rdkit.Chem import AllChem
 from rdkit.Chem.inchi import MolToInchi
 
 _ENGINE = None
+
+
+def _similarity(ref_fp, mol):
+    """Morgan (radius 2, 2048 bits) Tanimoto between `ref_fp` and `mol`; 0.0 if there is no reference."""
+    if ref_fp is None:
+        return 0.0
+    return DataStructs.TanimotoSimilarity(
+        ref_fp, AllChem.GetMorganFingerprintAsBitVect(mol, 2, nBits=2048)
+    )
 
 
 def _load_engine(checkpoints_dir):
@@ -102,7 +112,8 @@ def _find_parent_frag_id(smiles, checkpoints_dir, fragment_db_graph, inchi_looku
 
 
 def generate_analogues(smiles, checkpoints_dir, n=100):
-    """Generate n drug-like analogues of input SMILES. Returns list of length n (None for failed slots)."""
+    """Generate n drug-like analogues of input SMILES, ordered from most to least similar
+    (Morgan Tanimoto) to the input. Returns list of length n (None for failed slots, at the end)."""
     from pymolgen.fragment_molecule import FragmentMolecule, convert_fragment_molecule_to_mol
     from pymolgen.fragment_molecule_builder import extend_molecule_random
     from pymolgen.molecule_formats import molecule_to_smiles
@@ -118,6 +129,14 @@ def generate_analogues(smiles, checkpoints_dir, n=100):
     parent = FragmentMolecule()
     parent.add_fragment(frag_id, [ap], {ap: cm})
     parent._graph._build_probability2 = 1.0
+
+    # an unparseable input has no reference: the outputs then keep their generation order
+    input_mol = Chem.MolFromSmiles(smiles)
+    ref_fp = (
+        AllChem.GetMorganFingerprintAsBitVect(input_mol, 2, nBits=2048)
+        if input_mol is not None
+        else None
+    )
 
     generated = []
     seen = set()
@@ -141,13 +160,17 @@ def generate_analogues(smiles, checkpoints_dir, n=100):
                         rdmol = Chem.MolFromSmiles(smi)
                         if rdmol is not None:
                             seen.add(smi)
-                            generated.append(smi)
+                            generated.append((_similarity(ref_fp, rdmol), smi))
                 except Exception:
                     pass
                 if len(generated) >= n:
                     break
         except Exception:
             pass
+
+    # most similar first; the sort is stable, so ties keep their generation order
+    generated.sort(key=lambda item: -item[0])
+    generated = [smi for _, smi in generated]
 
     while len(generated) < n:
         generated.append(None)
