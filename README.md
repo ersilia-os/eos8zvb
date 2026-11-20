@@ -2,7 +2,8 @@
 
 Grows up to 100 drug-like analogues of an input compound by joining fragments according to combination rules mined from a source database, in this case the 2.3 million compounds of ChEMBL, so bonds form only between fragment pairs that occur there. PyMolGen is rule-based rather than learned, which gives more control over the output than a generative network but bounds novelty by the fragment library. Growth is random and unseeded; results are deduplicated, checked with RDKit, never equal to the input and ordered by similarity to it.
 
-This model was incorporated on 2026-08-04.Last packaged on 2026-10-04.
+This model was incorporated on 2026-08-04.
+Last packaged on 2026-10-04.
 
 ## Information
 ### Identifiers
@@ -46,6 +47,7 @@ _10 of 100 columns are shown_
 - **DockerHub**: [https://hub.docker.com/r/ersiliaos/eos8zvb](https://hub.docker.com/r/ersiliaos/eos8zvb)
 - **Docker Architecture:** `AMD64`
 - **S3 Storage**: [https://ersilia-models-zipped.s3.eu-central-1.amazonaws.com/eos8zvb.zip](https://ersilia-models-zipped.s3.eu-central-1.amazonaws.com/eos8zvb.zip)
+- **Apptainer**: [https://models-sif.s3.eu-north-1.amazonaws.com/eos8zvb_v2.sif](https://models-sif.s3.eu-north-1.amazonaws.com/eos8zvb_v2.sif)
 
 ### Resource Consumption
 - **Model Size (Mb):** `42`
