@@ -2,13 +2,14 @@ Identifier: eos8zvb
 Slug: pymolgen
 Status: Ready
 Title: PyMolGen Drug-Like Molecule Generation
-Description: Grows up to 100 drug-like analogues of an input compound by joining fragments
-  according to combination rules mined from a source database, in this case the 2.3
-  million compounds of ChEMBL, so bonds form only between fragment pairs that occur
-  there. PyMolGen is rule-based rather than learned, which gives more control over
-  the output than a generative network but bounds novelty by the fragment library.
-  Growth is random and unseeded; results are deduplicated, checked with RDKit, never
-  equal to the input and ordered by similarity to it.
+Description: Grows up to 100 drug-like analogues of an input compound by joining
+  fragments according to combination rules mined from a source database, in this
+  case the 2.3 million compounds of ChEMBL, so bonds form only between fragment 
+  pairs that occur there. PyMolGen is rule-based rather than learned, which 
+  gives more control over the output than a generative network but bounds 
+  novelty by the fragment library. Growth is random and unseeded; results are 
+  deduplicated, checked with RDKit, never equal to the input and ordered by 
+  similarity to it.
 Deployment:
   - Local
 Source: Local
@@ -22,8 +23,8 @@ Output:
   - Compound
 Output Dimension: 100
 Output Consistency: Variable
-Interpretation: Up to 100 generated analogues of the input, ordered by decreasing
-  similarity, from unseeded random fragment growth.
+Interpretation: Up to 100 generated analogues of the input, ordered by 
+  decreasing similarity, from unseeded random fragment growth.
 Tag:
   - Compound generation
   - Drug-likeness
@@ -40,7 +41,7 @@ License: MIT
 Contributor: arnaucoma24
 Incorporation Date: '2026-08-04'
 Last Packaging Date: '2026-10-04'
-Release: v1.0.0
+Release: v2.0.0
 S3: https://ersilia-models-zipped.s3.eu-central-1.amazonaws.com/eos8zvb.zip
 DockerHub: https://hub.docker.com/r/ersiliaos/eos8zvb
 Docker Architecture: AMD64
